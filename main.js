@@ -1,4 +1,4 @@
-const baseURL = "https://172.104.149.64/"
+const baseURL = "https://b1messenger.tk/"
 
 
 
@@ -9,7 +9,7 @@ const registerPageButton = document.querySelector("#registerPage")
 const loginPageButton = document.querySelector("#loginPage")
 const mymodal = document.querySelector("#myModal")
 const closeModal = document.querySelector(".close")
-const element = document.querySelector('#deletebutton');
+const element = document.querySelector('#deletebutton')
 let token
 
 let currentuser
@@ -27,7 +27,6 @@ function clearMainContainer(){
     mainContainer.innerHTML= ""
 }
 
-
 function display(content){
     //vider la div principale
     clearMainContainer()
@@ -35,6 +34,7 @@ function display(content){
 
     mainContainer.innerHTML=content
 }
+
 function closeModalRegister() {
 
     closeModal.addEventListener("click", ()=>{
@@ -43,7 +43,6 @@ function closeModalRegister() {
         mymodal.close()
     })
 }
-
 
 function getMessageTemplate(message){
 
@@ -54,7 +53,8 @@ function getMessageTemplate(message){
                             <div class="row d-flex">
                                 <p>Author : ${message.author.username}</p> 
                               
-                                <p class=" rounded-pill text-bg-primary"><strong>${message.content}</strong> <button type="button" class=" delbutton btn btn-success">Success</button>
+                                <p class=" rounded-pill text-bg-primary"><strong>${message.content}</strong> <button type="button" id="${message.id}" class="btn btn-secondary"></button> <button type="button" id="${message.id}" class=" delbutton  btn btn-secondary"><i class="bi bi-trash"></i>
+</button>
                                         </p>
                             
                        </div>
@@ -66,10 +66,21 @@ function getMessageTemplate(message){
 
                             <div class="row d-flex">
                                 <p>Author : ${message.author.username}</p> 
-                              
-                                <p class=" rounded-pill text-bg-primary"><strong>${message.content}</strong> 
+                              <div>
+                                <p class=" rounded-pill text-bg-primary"><strong>${message.content}</strong> <div class="  btn-group">
+                                  <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Reaction 
+                                  </button>
+                                  <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Happy</a></li>
+                                    <li><a class="dropdown-item" href="#">Lol</a></li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Separated link</a></li>
+                                  </ul>
+                                </div>
                                         </p>
-                            
+                            </div>
                        </div>
                             </div>
                         `
@@ -188,31 +199,38 @@ async function displayMessagesPage(){
             sendButton.addEventListener("click", sendMessage)
 
 
+            const delbutton = document.querySelectorAll(".delbutton")
+            delbutton.forEach( btn=>{
+
+                btn.addEventListener("click" ,()=> {
+                    let currentmessageid = btn.id
+                    let url = `${baseURL}api/messages/delete/${currentmessageid}`
+
+                    let fetchParams = {
+                        method : "DELETE",
+                        headers:{"Content-Type":"application/json",
+                            "Authorization": `Bearer ${token}`
+                        },
+
+                    }
+
+
+                    fetch(url, fetchParams)
+
+                    displayMessagesPage()
+
+                })
+            })
+
+
         })
+
     }
 
-    const delbutton = document.querySelectorAll(".delbutton")
-    delbutton.forEach( btn=>{
-   btn.addEventListener("click" ,()=>{
-       let currentmessageid = btn.id
-       let url = `${baseURL}api/messages/delete/${currentmessageid}`
 
-
-       let fetchParams = {
-           method : "DELETE",
-           headers:{"Content-Type":"application/json",
-               "Authorization": `Bearer ${token}`
-           },
-
-       }
-
-
-       fetch(url, fetchParams)
-       displayMessagesPage()
-
-   })
-})
 }
+
+
 
 function displayLoginPage(){
     display(getLoginTemplate())
@@ -236,7 +254,6 @@ function displayRegisterPage(){
     })
 
 }
-
 
 function sendMessage(){
     let url = `${baseURL}api/messages/new`
@@ -356,7 +373,5 @@ function login(){
 
 
 }
-
-
 
 displayLoginPage()
